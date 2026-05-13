@@ -8,7 +8,7 @@ function onOpen()
 
 function showPrintModal()
 {
-	const url = ScriptApp.getService().getUrl();
+	const url = 'https://script.google.com/a/macros/banquealimentaire.org/s/AKfycbzqZ4Fb1ImWcV7A4A4HCqqn6gllVXZdMJius1CUuFJ6tBqJnY4Zx_IzJzAgb_frykk93Q/exec';
 	const html = `<script>window.open("${url}", "_blank"); google.script.host.close();</script>`;
 	const userInterface = HtmlService.createHtmlOutput(html)
 		.setWidth(300)

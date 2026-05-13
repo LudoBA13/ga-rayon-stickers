@@ -181,13 +181,14 @@
 			const formattedRef = format(refPrice);
 
 			// Detect diacritics (including common French accents)
-			const hasDiacritics = /[àâäçéèêëîïôöùûüÿ]/i.test(item);
+			const formattedItem = item.replace(/\s*\/\s*/g, '\u2044');
+			const hasDiacritics = /[àâäçéèêëîïôöùûüÿ]/i.test(formattedItem);
 			const nameClass = hasDiacritics ? 'name-text has-diacritics' : 'name-text';
 
 			sticker.innerHTML = `
 				<div class="name-area">
 					<div class="fit-wrapper">
-						<div class="${nameClass}">${item}</div>
+						<div class="${nameClass}">${formattedItem}</div>
 					</div>
 				</div>
 				<div class="price-area">
@@ -210,26 +211,43 @@
 
 		async function init()
 		{
-			// Wait for fonts to be ready to ensure accurate measurements
-			await document.fonts.ready;
-
-			google.script.run
-				.withSuccessHandler(data =>
-				{
-					data.forEach(row =>
+			// Create a promise for data retrieval
+			const fetchData = new Promise((resolve, reject) =>
+			{
+				google.script.run
+					.withSuccessHandler(data =>
 					{
-						// row[0] is column B, row[1] is column C, row[2] is column D
-						if (row[0])
+						data.forEach(row =>
 						{
-							addSticker(row[0], row[1], row[2]);
-						}
-					});
-					window.print();
-				})
-				.getSheetData();
+							if (row[0])
+							{
+								addSticker(row[0], row[1], row[2]);
+							}
+						});
+						resolve();
+					})
+					.withFailureHandler(reject)
+					.getSheetData();
+			});
+
+			// Execute font loading and data retrieval in parallel
+			await Promise.all([document.fonts.ready, fetchData]);
+			window.print();
 		}
 
 		window.onload = init;
+
+		window.onafterprint = () =>
+		{
+			try
+			{
+				window.close();
+			}
+			catch (e)
+			{
+				// Ignore close errors
+			}
+		};
 	</script>
 </body>
 </html>
