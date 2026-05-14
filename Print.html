@@ -232,6 +232,7 @@
 
 			// Execute font loading and data retrieval in parallel
 			await Promise.all([document.fonts.ready, fetchData]);
+
 			window.print();
 		}
 
@@ -241,7 +242,10 @@
 		{
 			try
 			{
-				window.close();
+				if (typeof google !== 'undefined' && google.script && google.script.host)
+				{
+					google.script.host.close();
+				}
 			}
 			catch (e)
 			{
