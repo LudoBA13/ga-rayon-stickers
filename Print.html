@@ -181,7 +181,7 @@
 			const formattedRef = format(refPrice);
 
 			// Detect diacritics (including common French accents)
-			const formattedItem = item.replace(/\s*\/\s*/g, '\u2044');
+			const formattedItem = item.replace(/\s*\/\s*/g, '\u200b\u2044\u200b');
 			const hasDiacritics = /[àâäçéèêëîïôöùûüÿ]/i.test(formattedItem);
 			const nameClass = hasDiacritics ? 'name-text has-diacritics' : 'name-text';
 
